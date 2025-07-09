@@ -8,7 +8,10 @@ import clerkWebhooks from './controllers/webhooks.js'
 const app = express()
 
 // Connect to Database
+
 await connectDB()
+
+
 
 //MiddleWares
 app.use(cors())
