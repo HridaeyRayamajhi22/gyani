@@ -4,14 +4,14 @@ GYANi is an easy-to-use Learning Management System (LMS) that helps students and
 
 Built with the modern MERN stack, GYANI provides a full-stack solution for managing authentication, payments, and course content — perfect as a robust college-level project or production-ready app.
 
-🔷 Features
+🔷 Features: 
 ✅ User authentication & management with Clerk
 ✅ Secure payments integration with Stripe
 ✅ Teacher dashboard to create and manage courses
 ✅ Student dashboard to enroll and access courses
 ✅ Responsive and user-friendly design
 
-🛠️ Tech Stack
+🛠️ Tech Stack:
 Frontend: React.js
 
 Backend: Node.js, Express.js
@@ -22,5 +22,5 @@ Authentication: Clerk
 
 Payments: Stripe
 
-🔷📖 Acknowledgements 
+🔷📖 Acknowledgements:
 Project inspired by 'GREAT STACK' YouTube tutorial on Learning Management System.
