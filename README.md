@@ -22,4 +22,5 @@ Authentication: Clerk
 
 Payments: Stripe
 
-🔷  Project inspired by this 'GREAT STACK' YouTube tutorial.
+🔷📖 Acknowledgements 
+Project inspired by 'GREAT STACK' YouTube tutorial on Learning Management System.
