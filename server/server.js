@@ -9,9 +9,7 @@ const app = express()
 
 // Connect to Database
 
-await connectDB()
-
-
+await connectDB() 
 
 //MiddleWares
 app.use(cors())
