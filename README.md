@@ -22,5 +22,5 @@ Authentication: Clerk
 
 Payments: Stripe
 
-🔷📖 Acknowledgements:
+📖 Acknowledgements:
 Project inspired by 'GREAT STACK' YouTube tutorial on Learning Management System.
