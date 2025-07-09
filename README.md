@@ -21,3 +21,5 @@ Database: MongoDB Atlas
 Authentication: Clerk
 
 Payments: Stripe
+
+🔷  Project inspired by this 'GREAT STACK' YouTube tutorial.
