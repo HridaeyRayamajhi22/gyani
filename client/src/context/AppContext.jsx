@@ -1,14 +1,20 @@
 import { createContext, useEffect, useState } from "react";
 import { dummyCourses } from "../assets/assets"
 import humanizeDuration from 'humanize-duration'
-import {useAuth, useUser} from '@clerk/clerk-react'
+import { useAuth, useUser } from '@clerk/clerk-react'
+import axios from 'axios'
+import { toast } from "react-toastify";
+
+
 export const AppContext = createContext()
 export const AppContextProvider = (props) => {
 
+    const backendUrl = import.meta.env.VITE_BACKEND_URL
+
     const currency = import.meta.env.VITE_CURRENCY
 
-    const {getToken} = useAuth()
-    const {user} = useUser()
+    const { getToken } = useAuth()
+    const { user } = useUser()
 
     const [allCourses, setAllCourses] = useState([])
     const [isEducator, setisEducator] = useState(true)
@@ -17,7 +23,17 @@ export const AppContextProvider = (props) => {
 
     // Fetch All CoursesSection
     const fetchAllCourses = async () => {
-        setAllCourses(dummyCourses)
+        try {
+           const data = await axios.get(backendUrl + '/api/course/all')
+
+           if(data.success){
+             setAllCourses(data.courses)
+           }else{
+              toast.error(data.message)
+           }
+        } catch (error) {
+            toast.error(error.message)
+        }
     }
 
     // Function to calculate average rating of courses
@@ -61,7 +77,7 @@ export const AppContextProvider = (props) => {
     }
 
     // Fetch user Enrolled Courses
-    const fetchUserEnrolledCourses = async ()=>{
+    const fetchUserEnrolledCourses = async () => {
         setEnrolledCourses(dummyCourses)
     }
 
@@ -75,10 +91,10 @@ export const AppContextProvider = (props) => {
     }
 
     useEffect(() => {
-        if(user){
-           logToken()
+        if (user) {
+            logToken()
         }
-    },[user])
+    }, [user])
     const value = {
         currency, allCourses, calculateRating, isEducator, setisEducator, calculateNoOfLectures, calculateCourseDuration, calculateChapterTime, enrolledCourses, fetchUserEnrolledCourses
     }
