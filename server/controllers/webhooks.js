@@ -135,7 +135,6 @@ import Course from "../models/Course.js";
 import Stripe from "stripe";
 
 // API Controller functions to Manage clerk User with DB
-
 export const clerkWebhooks = async (req, res) => {
   try {
     const whook = new Webhook(process.env.CLERK_WEBHOOK_SECRET);
@@ -186,13 +185,11 @@ export const clerkWebhooks = async (req, res) => {
 };
 
 const stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY)
-   const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
 export const stripeWebhooks = async(request, response)=>{
-      const event = request.body;
    
-  if (endpointSecret) {
     const signature = request.headers['stripe-signature'];
+    let event;
     try {
       event = Stripe.webhooks.constructEvent(
         request.body,
@@ -225,13 +222,12 @@ export const stripeWebhooks = async(request, response)=>{
       userData.enrolledCourses.push(courseData._id)
       await userData.save()
 
-
-      purchaseData.status = 'Completed'
+      purchaseData.status = 'completed'
       await purchaseData.save()
       break;
     }
 
-    case 'payment_intent.payment_failed':
+    case 'payment_intent.payment_failed':{
       const paymentIntent = event.data.object;
       const paymentIntentId = paymentIntent.id;
       
@@ -241,10 +237,11 @@ export const stripeWebhooks = async(request, response)=>{
 
       const {purchaseId} = session.data[0].metadata;
       const purchaseData = await Purchase.findById(purchaseId)
-      purchaseData.status = 'Failed'
+      purchaseData.status = 'failed'
       await purchaseData.save()
        
       break;
+    }
     // ... handle other event types
     default:
       console.log(`Unhandled event type ${event.type}`);
@@ -253,4 +250,4 @@ export const stripeWebhooks = async(request, response)=>{
   // Return a response to acknowledge receipt of the event
   response.json({received: true});
 
-  }}
+  }
