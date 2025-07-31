@@ -1,3 +1,4 @@
+
 import { Webhook } from "svix";
 import User from "../models/User.js";
 import { Purchase } from "../models/Purchase.js";
@@ -80,6 +81,14 @@ export const stripeWebhooks = async(request, response)=>{
       const session = await stripeInstance.checkout.sessions.list({
          payment_intent: paymentIntentId
       })
+
+        // 🔹 Debug log here
+      console.log('Session list:', session.data);
+
+      if (!session.data.length || !session.data[0].metadata.purchaseId) {
+        console.log('⚠️ No checkout session or purchaseId found for this payment');
+        break;
+      }
 
       const {purchaseId} = session.data[0].metadata
       const purchaseData = await Purchase.findById(purchaseId)
