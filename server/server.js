@@ -8,6 +8,8 @@ import { clerkMiddleware } from "@clerk/express";
 import connectCloudinary from "./configs/cloudinary.js";
 import courseRouter from "./routes/courseRoute.js";
 import userRouter from "./routes/userRoutes.js";
+import bodyParser from 'body-parser';
+
 
 //Initialize express
 const app = express();
