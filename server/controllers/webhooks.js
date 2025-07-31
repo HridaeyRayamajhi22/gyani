@@ -1,6 +1,3 @@
-
-
-
 import { Webhook } from "svix";
 import User from "../models/User.js";
 import { Purchase } from "../models/Purchase.js";
@@ -89,7 +86,10 @@ export const stripeWebhooks = async (req, res) => {
 
         console.log("💳 Session List:", sessionList.data);
 
-        if (!sessionList.data.length || !sessionList.data[0].metadata?.purchaseId) {
+        if (
+          !sessionList.data.length ||
+          !sessionList.data[0].metadata?.purchaseId
+        ) {
           console.warn("⚠️ No checkout session or purchaseId found.");
           break;
         }
@@ -102,7 +102,9 @@ export const stripeWebhooks = async (req, res) => {
         }
 
         const userData = await User.findById(purchaseData.userId);
-        const courseData = await Course.findById(purchaseData.courseId.toString());
+        const courseData = await Course.findById(
+          purchaseData.courseId.toString()
+        );
 
         if (!userData || !courseData) {
           console.warn("⚠️ User or Course not found.");
@@ -135,7 +137,10 @@ export const stripeWebhooks = async (req, res) => {
           payment_intent: paymentIntentId,
         });
 
-        if (sessionList.data.length && sessionList.data[0].metadata?.purchaseId) {
+        if (
+          sessionList.data.length &&
+          sessionList.data[0].metadata?.purchaseId
+        ) {
           const { purchaseId } = sessionList.data[0].metadata;
           const purchaseData = await Purchase.findById(purchaseId);
           if (purchaseData) {
