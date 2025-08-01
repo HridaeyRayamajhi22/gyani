@@ -1,20 +1,39 @@
 
-
-
 import React, { useContext } from 'react';
 import { assets } from '../../assets/assets';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useClerk, UserButton, useUser } from '@clerk/clerk-react';
 import { AppContext } from '../../context/AppContext';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 
 const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const { isEducator } = useContext(AppContext);
+  const { isEducator, backendUrl, setIsEducator, getToken } = useContext(AppContext);
 
   const { openSignIn } = useClerk();
   const { user } = useUser();
+
+  const becomeEducator = async () => {
+    try {
+      if (isEducator) {
+        navigate('/educator')
+        return
+      }
+
+      const token = await getToken()
+      const { data } = await axios.get(backendUrl + '/api/educator/update-role', { headers: { Authorization: `Bearer ${token}` } })
+
+      if (data.success) {
+        setIsEducator(true)
+        toast.success(data.message)
+      }
+    } catch (error) {
+      toast.error(data.message)
+    }
+  }
 
   // If we are on home page exactly → use `logo`, else use `logo_light`
   const isHomePage = location.pathname === '/';
@@ -40,7 +59,7 @@ const Navbar = () => {
             <>
               <button
                 className='cursor-pointer hover:text-blue-600 hover:font-semibold'
-                onClick={() => navigate('/educator')}
+                onClick={becomeEducator}
               >
                 {isEducator ? 'Educator Dashboard' : 'Become Educator'}
               </button>
@@ -78,7 +97,7 @@ const Navbar = () => {
         <div className='flex items-center gap-1 sm:gap-2 max-sm:text-xs cursor-pointer'>
           {user && (
             <>
-              <button className='cursor-pointer hover:text-blue-600 hover:font-semibold' onClick={() => navigate('/educator')}>
+              <button className='cursor-pointer hover:text-blue-600 hover:font-semibold' onClick={becomeEducator}>
                 {isEducator ? 'Educator Dashboard' : 'Become Educator'}
               </button>
               |
