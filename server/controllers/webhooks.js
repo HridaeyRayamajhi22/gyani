@@ -4,7 +4,7 @@ import { Purchase } from "../models/Purchase.js";
 import Course from "../models/Course.js";
 import Stripe from "stripe";
 
-const stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY);
+
 
 // ----------------- Clerk Webhooks -----------------
 export const clerkWebhooks = async (req, res) => {
@@ -56,6 +56,7 @@ export const clerkWebhooks = async (req, res) => {
   }
 };
 
+const stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY);
 // ----------------- Stripe Webhooks -----------------
 export const stripeWebhooks = async (req, res) => {
   const signature = req.headers["stripe-signature"];
@@ -84,48 +85,22 @@ export const stripeWebhooks = async (req, res) => {
           payment_intent: paymentIntentId,
         });
 
-        console.log("💳 Session List:", sessionList.data);
-
-        if (
-          !sessionList.data.length ||
-          !sessionList.data[0].metadata?.purchaseId
-        ) {
-          console.warn("⚠️ No checkout session or purchaseId found.");
-          break;
-        }
-
         const { purchaseId } = sessionList.data[0].metadata;
         const purchaseData = await Purchase.findById(purchaseId);
-        if (!purchaseData) {
-          console.warn(`⚠️ Purchase ${purchaseId} not found in DB.`);
-          break;
-        }
 
         const userData = await User.findById(purchaseData.userId);
         const courseData = await Course.findById(
           purchaseData.courseId.toString()
         );
 
-        if (!userData || !courseData) {
-          console.warn("⚠️ User or Course not found.");
-          break;
-        }
+       
+       courseData.enrolledStudents.push(userData)
+       await courseData.save()
+       userData.enrolledCourses.push(courseData._id)
+       await userData.save()
 
-        // Update DB
-        if (!courseData.enrolledStudents.includes(userData._id)) {
-          courseData.enrolledStudents.push(userData._id);
-          await courseData.save();
-        }
-
-        if (!userData.enrolledCourses.includes(courseData._id)) {
-          userData.enrolledCourses.push(courseData._id);
-          await userData.save();
-        }
-
-        purchaseData.status = "completed";
-        await purchaseData.save();
-
-        console.log(`✅ Purchase ${purchaseId} marked as completed`);
+       purchaseData.status = 'completed'
+       await purchaseData.save()
         break;
       }
 

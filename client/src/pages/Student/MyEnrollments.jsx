@@ -1,29 +1,63 @@
-import React, { useContext, useState } from 'react';
-import { AppContext } from '../../context/AppContext';
-import { useNavigate } from 'react-router-dom';
-import { Line } from 'rc-progress';
-import Footer from '../../components/Student/Footer';
+import React, { useContext, useEffect, useState } from "react";
+import { AppContext } from "../../context/AppContext";
+import { useNavigate } from "react-router-dom";
+import { Line } from "rc-progress";
+import Footer from "../../components/Student/Footer";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const MyEnrollments = () => {
-  const { enrolledCourses, calculateCourseDuration } = useContext(AppContext);
-  const navigate = useNavigate();
+  const navigate = useNavigate(); // ✅ move inside component
 
-  const [progressArray] = useState([
-    { lectureCompleted: 2, totalLectures: 4 },
-    { lectureCompleted: 1, totalLectures: 5 },
-    { lectureCompleted: 3, totalLectures: 6 },
-    { lectureCompleted: 4, totalLectures: 4 },
-    { lectureCompleted: 0, totalLectures: 3 },
-    { lectureCompleted: 5, totalLectures: 7 },
-    { lectureCompleted: 6, totalLectures: 8 },
-    { lectureCompleted: 2, totalLectures: 6 },
-    { lectureCompleted: 4, totalLectures: 10 },
-    { lectureCompleted: 3, totalLectures: 5 },
-    { lectureCompleted: 7, totalLectures: 7 },
-    { lectureCompleted: 1, totalLectures: 4 },
-    { lectureCompleted: 0, totalLectures: 2 },
-    { lectureCompleted: 5, totalLectures: 5 },
-  ]);
+  const {
+    enrolledCourses,
+    calculateCourseDuration,
+    userData,
+    fetchUserEnrolledCourses,
+    backendUrl,
+    getToken,
+    calculateNoOfLectures,
+  } = useContext(AppContext); // ✅ removed `navigate` from destructure
+
+  const [progressArray, setProgressArray] = useState([]);
+
+  const getCourseProgress = async () => {
+    try {
+      const token = await getToken();
+      const tempProgressArray = await Promise.all(
+        enrolledCourses.map(async (course) => {
+          const { data } = await axios.post(
+            `${backendUrl}/api/user/get-course-progress`,
+            { courseId: course._id },
+            { headers: { Authorization: `Bearer ${token}` } }
+          );
+
+          const totalLectures = calculateNoOfLectures(course);
+          const lectureCompleted = data.progressData
+            ? data.progressData.lectureCompleted.length
+            : 0;
+
+          return { totalLectures, lectureCompleted };
+        })
+      );
+
+      setProgressArray(tempProgressArray); // ✅ you forgot to set state
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
+  useEffect(() => {
+    if (userData) {
+      fetchUserEnrolledCourses();
+    }
+  }, [userData]);
+
+  useEffect(() => {
+    if (enrolledCourses.length > 0) {
+      getCourseProgress();
+    }
+  }, [enrolledCourses]);
 
   return (
     <>
@@ -73,10 +107,10 @@ const MyEnrollments = () => {
                           trailWidth={4}
                           strokeColor={
                             progressPercent === 100
-                              ? '#22c55e' // green
+                              ? "#22c55e" // green
                               : progressPercent > 50
-                              ? '#3b82f6' // blue
-                              : '#facc15' // yellow
+                              ? "#3b82f6" // blue
+                              : "#facc15" // yellow
                           }
                           trailColor="#e5e7eb"
                         />
@@ -93,12 +127,12 @@ const MyEnrollments = () => {
                       <button
                         className={`px-3 sm:px-5 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium shadow cursor-pointer ${
                           completed
-                            ? 'bg-green-600 hover:bg-green-700 text-white'
-                            : 'bg-blue-600 hover:bg-blue-700 text-white'
+                            ? "bg-green-600 hover:bg-green-700 text-white"
+                            : "bg-blue-600 hover:bg-blue-700 text-white"
                         }`}
-                        onClick={() => navigate('/player/' + course._id)}
+                        onClick={() => navigate("/player/" + course._id)}
                       >
-                        {completed ? 'Completed' : 'On Going'}
+                        {completed ? "Completed" : "On Going"}
                       </button>
                     </td>
                   </tr>
