@@ -151,11 +151,9 @@ export const stripeWebhooks = async (req, res) => {
         }
         break;
       }
-
       default:
         console.log(`Unhandled Stripe event type: ${event.type}`);
     }
-
     res.sendStatus(200); // Acknowledge to Stripe
   } catch (err) {
     console.error("❌ Error processing Stripe webhook:", err);
