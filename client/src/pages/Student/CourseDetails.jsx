@@ -279,7 +279,7 @@ const CourseDetails = () => {
                 </p>
               </div>
 
-              <button
+              <button 
                 onClick={() => {
                   if (isAlreadyEnrolled) {
                     continueLearning();
@@ -287,11 +287,11 @@ const CourseDetails = () => {
                     enrollCourse();
                   }
                 }}
-                className={`mt-4 w-full py-2 rounded-lg text-white text-sm font-medium shadow-md transition-colors ${
+                className={`mt-4 w-full py-2 rounded-lg text-white text-sm font-medium shadow-md transition-colors cursor-pointer ${
                   isAlreadyEnrolled ? 'bg-green-600 hover:bg-green-700' : 'bg-blue-600 hover:bg-blue-700'
                 }`}
               >
-                {isAlreadyEnrolled ? 'Continue Learning' : 'Enroll Now'}
+                { isAlreadyEnrolled ? 'Continue Learning' : 'Enroll Now'}
               </button>
             </div>
           </div>
